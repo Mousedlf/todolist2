@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ListeController!{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+
+        {% for liste in listes %}
+            {% if liste.category.name == "public" %}
+        <div class="form-group col-3 border p-4 m-2">
+            <div class="d-flex justify-content-between">
+                <a href="{{ path('delete_liste', {id:liste.id}) }}" class="text-danger fs-5 btn"><i class="bi bi-trash-fill"></i></a>
+                <a href="{{ path('edit_liste', {id:liste.id}) }}" class="text-info fs-5 btn"><i class="bi bi-pencil-fill"></i></a>
+            </div>
+            <p class="fs-3 mt-4 mb-0">{{ liste.name }}</p>
+            <p class="text-secondary">by: {{ liste.author.username }}</p>
+
+            <div class="mb-5">
+                {% for task in liste.tasks %}
+                    <div class="d-flex">
+                        <p class="me-2" >{{ task.content }}</p>
+
+                            <a href="{{ path('app_check', {id:task.id}) }}" class="btn check">
+                                <i {% if task.isCheckedBy(app.user)%}
+                                        class="cercle bi bi-house-door-fill"
+                                        {% else %}
+                                        class="cercle bi bi-house"
+                                    {% endif %}">
+                                </i>
+{#                                 <span class="nbCheck">{{ task.checks|length}}</span>#}
+                            </a>
+
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+            {% endif %}
+        {% endfor %}
+
+    </div>
+
+
+
+
+
+    <script>
+        function check(event){
+            event.preventDefault()
+
+            fetch(this.href)
+                .then(response=>response.json())
+                .then((data)=>{
+/*
+                    this.querySelector('.nbCheck').innerHTML = data.count
+*/
+                    if(data.checked){
+                        this.querySelector('.cercle').classList.remove('bi bi-circle')
+                        this.querySelector('.cercle').classList.add('bi bi-check-circle-fill')
+                    }else{
+                        this.querySelector('.cercle').classList.remove('bi bi-check-circle-fill')
+                        this.querySelector('.cercle').classList.add('bi bi-circle')
+                    }
+                })
+        }
+
+        document.addEventListener('DOMContentLoaded', ()=>{
+            const boutonsLike = document.querySelectorAll('.like')
+
+            boutonsLike.forEach((bouton)=>{
+                bouton.addEventListener('click', like)
+            })
+        })
+    </script>
+
+
+{% endblock %}

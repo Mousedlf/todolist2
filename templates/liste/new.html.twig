@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ListeController!{% endblock %}
+
+{% block body %}
+
+    {{ form_start(formListe) }}
+    {{ form_row(formListe.name) }}
+    {{ form_row(formListe.category) }}
+
+
+    <ul class="task"
+        data-index="{{ formListe.tasks|length > 0 ? formListe.tasks|last.vars.name + 1 : 0 }}"
+        data-prototype="{{ form_widget(formListe.tasks.vars.prototype)|e('html_attr') }}"
+    ></ul>
+    <button type="button" class="add_item_link btn btn-warning" data-collection-holder-class="task">Ajouter todo</button>
+
+    <button type="submit">ok</button>
+    {{ form_end(formListe) }}
+
+
+
+    <script>
+        const addFormToCollection = (e) => {
+            const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+            const item = document.createElement('li');
+
+            item.innerHTML = collectionHolder
+                .dataset
+                .prototype
+                .replace(
+                    /__name__/g,
+                    collectionHolder.dataset.index
+                );
+
+            collectionHolder.appendChild(item);
+            collectionHolder.dataset.index++;
+        };
+
+        document
+            .querySelectorAll('.add_item_link')
+            .forEach(btn => {
+                btn.addEventListener("click", addFormToCollection)
+            });
+    </script>
+
+{% endblock %}
